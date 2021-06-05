@@ -1,4 +1,5 @@
 import nltk
+from nltk.probability import RandomProbDist
 from nltk.stem.lancaster import LancasterStemmer
 from nltk.corpus import stopwords
 stemmer = LancasterStemmer()
@@ -11,11 +12,14 @@ import json
 import pickle
 import os
 
+
 with open("intents.json") as file:
     data = json.load(file)
+
 try:
-    with open("data.pickle", "rb") as f:
+    with open("data.pickle", 'rb') as f:
         words, labels, training, output = pickle.load(f)
+
 except:
     words = []
     labels = []
@@ -67,6 +71,7 @@ except:
     with open("data.pickle", "wb") as f:
         pickle.dump((words, labels, training, output), f)
 
+
 net = tflearn.input_data(shape=[None, len(training[0])])
 net = tflearn.fully_connected(net,8)
 net = tflearn.fully_connected(net,8)
@@ -75,11 +80,8 @@ net = tflearn.regression(net)
 
 model = tflearn.DNN(net)
 
-try:
-    model.load("model_1")
-except:
-    model.fit(training, output, n_epoch=1000, batch_size=8)
-    model.save("model_1")
+model.fit(training, output, n_epoch=1000, batch_size=8)
+model.save("model_1")
 
 
 
